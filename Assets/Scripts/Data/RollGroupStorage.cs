@@ -46,8 +46,8 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
         if (index >= 0)
         {
             Instance.loadedGroups[index] = newData;
-            SelectionManager.SelectedRollGroup = newData;
             onLoadedGroupsUpdated?.Invoke();
+            SelectionManager.SelectedRollGroup = newData;
         }
     }
 

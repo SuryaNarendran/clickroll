@@ -10,6 +10,7 @@ public class SaveButtonHandler : MonoBehaviour
 
     public void Save()
     {
+        RollGroupStorage.UpdateSelectedRollGroup(SelectionManager.ActiveGroupDisplay.GetRollGroupCopy());
         RollGroupStorage.SaveToFile();
 
         if(savedConfirmationText.color.a < 0.1f)

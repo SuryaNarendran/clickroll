@@ -23,7 +23,7 @@ public class SelectionManager : Singleton<SelectionManager>
             if (RollGroupStorage.LoadedRollGroups.Contains(value))
             {
                 Instance.selectedRollGroupIndex = RollGroupStorage.LoadedRollGroups.IndexOf(value);
-                Instance.UpdateActiveSelectedDisplay();
+                onGroupSelected?.Invoke();
             } 
         }
     }
@@ -34,13 +34,16 @@ public class SelectionManager : Singleton<SelectionManager>
         set
         {
             Instance.selectedRollGroupIndex = value;
-            Instance.UpdateActiveSelectedDisplay();
+            onGroupSelected?.Invoke();
         }
     }
+
+    public static event System.Action onGroupSelected;
 
     private void Awake()
     {
         RollGroupStorage.onLoadedGroupsUpdated += UpdateSelectedGroupIndex;
+        onGroupSelected += UpdateActiveSelectedDisplay;
     }
 
     private void UpdateSelectedGroupIndex()
@@ -51,6 +54,6 @@ public class SelectionManager : Singleton<SelectionManager>
 
     private void UpdateActiveSelectedDisplay()
     {
-        ActiveGroupDisplay.SetRollGroup(SelectedRollGroup);
+        ActiveGroupDisplay.SetRollGroup(SelectedRollGroup.Clone());
     }
 }

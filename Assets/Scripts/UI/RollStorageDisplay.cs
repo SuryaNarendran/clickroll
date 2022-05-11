@@ -18,16 +18,18 @@ public class RollStorageDisplay : MonoBehaviour
         groupDisplayBoxes = new List<RollGroupDisplay>();
 
         RollGroupStorage.onLoadedGroupsUpdated += RefreshMembers;
+        SelectionManager.onGroupSelected += UpdateHighlighting;
     }
 
     private void OnEnable()
     {
-        RefreshMembers();
+        //NOTE: Setup is handled when RefreshMembers is called by RollGroupStorage.onLoadedGroupsUpdated
+        //RefreshMembers();
 
-        SelectGroup(groupDisplayBoxes[0]);
-        SelectableDisplay defaultBox = groupDisplayBoxes[0].GetComponent<SelectableDisplay>();
-        currentlySelected = defaultBox;
-        currentlySelected.SetHighlight(true);
+        //SelectGroup(groupDisplayBoxes[0]);
+        //SelectableDisplay defaultBox = groupDisplayBoxes[0].GetComponent<SelectableDisplay>();
+        //currentlySelected = defaultBox;
+        //currentlySelected.SetHighlight(true);
         
     }
 
@@ -62,10 +64,9 @@ public class RollStorageDisplay : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentHolder);
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentHolder);
 
-        RollGroupDisplay selectedGroupDisplay = groupDisplayBoxes.FirstOrDefault(x => x.HoldsGroup(SelectionManager.SelectedRollGroup));
-        if (selectedGroupDisplay)
+        if (CurrentlySelectedDisplay)
         {
-            currentlySelected = selectedGroupDisplay.GetComponent<SelectableDisplay>();
+            currentlySelected = CurrentlySelectedDisplay.GetComponent<SelectableDisplay>();
             currentlySelected.SetHighlight(true);
             //NOTE: selection does not happen properly at start up
         }
@@ -78,9 +79,17 @@ public class RollStorageDisplay : MonoBehaviour
 
     private void OnBoxSelected(Transform box)
     {
-        currentlySelected?.Deselect();
-        currentlySelected = box.GetComponent<SelectableDisplay>();
         RollGroupDisplay rollGroupDisplay = box.GetComponent<RollGroupDisplay>();
         SelectGroup(rollGroupDisplay);
     }
+
+    private void UpdateHighlighting()
+    {
+        currentlySelected?.SetHighlight(false);
+        currentlySelected = CurrentlySelectedDisplay.GetComponent<SelectableDisplay>();
+        currentlySelected.SetHighlight(true);
+    }
+
+    private RollGroupDisplay CurrentlySelectedDisplay 
+        => groupDisplayBoxes.FirstOrDefault(x => x.HoldsGroup(SelectionManager.SelectedRollGroup));
 }

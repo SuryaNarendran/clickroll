@@ -9,5 +9,6 @@ public class GroupDeleteButtonHandler : MonoBehaviour
     public void Delete()
     {
         rollGroupDisplay.DeleteReferencedGroup();
+        RollGroupStorage.SaveToFile();
     }
 }
