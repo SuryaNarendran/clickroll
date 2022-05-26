@@ -123,6 +123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 381458279371943899}
   - component: {fileID: 381458279371943898}
+  - component: {fileID: 997035972}
   m_Layer: 5
   m_Name: EditableRollGroupDisplay
   m_TagString: Untagged
@@ -171,8 +172,24 @@ MonoBehaviour:
   contentHolder: {fileID: 1607041050221183855}
   textLabel: {fileID: 0}
   inputFieldLabel: {fileID: 4526781717008098494}
-  triggerDataRefreshOnUpdate: 1
   memberDisplayLimit: 100
+--- !u!114 &997035972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 381458279371943896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4f70d8eb77778148b21cfc08a5259da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  editableDisplay: {fileID: 381458279371943898}
+  editableFieldsParent: {fileID: 1607041050221183855}
+  nameInputField: {fileID: 4526781717008098494}
+  saveDataButton: {fileID: 0}
+  warningColor: {r: 1, g: 0.56037736, b: 0.56037736, a: 1}
 --- !u!1 &868908478870819748
 GameObject:
   m_ObjectHideFlags: 0
@@ -449,7 +466,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3175351699085475912}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.96097225
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -466,6 +483,7 @@ GameObject:
   - component: {fileID: 496260423784398550}
   - component: {fileID: 8363807665381373704}
   - component: {fileID: 4526781717008098494}
+  - component: {fileID: 7677515942610903539}
   m_Layer: 5
   m_Name: Name Input Field
   m_TagString: Untagged
@@ -490,7 +508,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 7, y: -15}
+  m_AnchoredPosition: {x: 7, y: -10}
   m_SizeDelta: {x: 483.254, y: 95.3038}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &496260423784398550
@@ -629,6 +647,19 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 2
   m_InputValidator: {fileID: 0}
+--- !u!114 &7677515942610903539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859609368976613913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 128f009d6c0c0ef45b903e0cb0f82c93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetGraphic: {fileID: 8363807665381373704}
 --- !u!1 &2239932227939079001
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,8 +773,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -55.717133}
-  m_SizeDelta: {x: 0, y: -125.4346}
+  m_AnchoredPosition: {x: 0, y: -52.75186}
+  m_SizeDelta: {x: 0, y: -119.504}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1087195892186770086
 CanvasRenderer:
@@ -938,7 +969,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.000006074086}
-  m_SizeDelta: {x: 0, y: 5}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &9180470401921529962
 MonoBehaviour:

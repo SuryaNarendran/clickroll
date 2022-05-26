@@ -17,14 +17,24 @@ public struct RollOutcome
 
     public int EvaluateAndRecord()
     {
-        diceOutcomes = new int[roll.numberOfDice];
-
         int total = 0;
         for (int i = 0; i < roll.numberOfDice; i++)
         {
-            int diceValue = Random.Range(0, roll.diceValue) + 1;
-            diceOutcomes[i] = diceValue;
-            total += diceValue;
+            diceOutcomes[i] = Random.Range(0, roll.diceValue) + 1;
+            total += diceOutcomes[i];
+        }
+
+        return total;
+    }
+
+    public int EvaluateAndRecord(int[] diceSelection)
+    {
+        int total = 0;
+        for (int i = 0; i < roll.numberOfDice; i++)
+        {
+            if (diceSelection.Contains(i))
+                diceOutcomes[i] = Random.Range(0, roll.diceValue) + 1;
+            total += diceOutcomes[i];
         }
 
         return total;

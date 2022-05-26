@@ -17,7 +17,7 @@ public class RollStorageDisplay : MonoBehaviour
     {
         groupDisplayBoxes = new List<RollGroupDisplay>();
 
-        RollGroupStorage.onLoadedGroupsUpdated += RefreshMembers;
+        RollGroupStorage.onLoadedDataDirty += RefreshMembers;
         SelectionManager.onGroupSelected += UpdateHighlighting;
     }
 
@@ -86,8 +86,12 @@ public class RollStorageDisplay : MonoBehaviour
     private void UpdateHighlighting()
     {
         currentlySelected?.SetHighlight(false);
-        currentlySelected = CurrentlySelectedDisplay.GetComponent<SelectableDisplay>();
-        currentlySelected.SetHighlight(true);
+        if (CurrentlySelectedDisplay)
+        {
+            currentlySelected = CurrentlySelectedDisplay.GetComponent<SelectableDisplay>();
+            currentlySelected.SetHighlight(true);
+        }
+
     }
 
     private RollGroupDisplay CurrentlySelectedDisplay 

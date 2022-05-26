@@ -11,5 +11,7 @@ public class RollButtonHandler : MonoBehaviour
         RollGroup currentRollGroup = currentDisplay.GetRollGroupCopy();
 
         SelectionManager.LastRolledDisplay.EvaluateAndRecord(currentRollGroup);
+        RollGroupStorage.AddHistory(SelectionManager.LastRolledDisplay.GetRollOutcomeGroupCopy());
+        RollGroupStorage.SaveToFile();
     }
 }

@@ -13,6 +13,8 @@ public class ModifierEntryField : MonoBehaviour, IModifierDisplay
 
     private IRollGroupDisplay rollGroupDisplay;
 
+    public Modifier currentData => modifier;
+
     private void Awake()
     {
         nameInput.onEndEdit.AddListener(UpdateName);

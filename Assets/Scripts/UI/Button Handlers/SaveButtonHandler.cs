@@ -5,18 +5,11 @@ using TMPro;
 
 public class SaveButtonHandler : MonoBehaviour
 {
-    [SerializeField] TMP_Text savedConfirmationText;
-    [SerializeField] Color color;
-
     public void Save()
     {
-        RollGroupStorage.UpdateSelectedRollGroup(SelectionManager.ActiveGroupDisplay.GetRollGroupCopy());
+        RollGroupStorage.UpdateSelectedRollGroup(SelectionManager.EditableDisplay.GetRollGroupCopy());
         RollGroupStorage.SaveToFile();
 
-        if(savedConfirmationText.color.a < 0.1f)
-        {
-            savedConfirmationText.color = color;
-            Timer.Register(4f, () => savedConfirmationText.color = new Color(0, 0, 0, 0));
-        }
+        SelectionManager.EditingOverlay.gameObject.SetActive(false);
     }
 }

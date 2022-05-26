@@ -27,4 +27,12 @@ public struct Roll: IRollGroupMember
 
         return total;
     }
+
+    public override bool Equals(object obj)
+    {
+        return
+            obj is Roll &&
+            ((Roll)obj).diceValue == diceValue &&
+            ((Roll)obj).numberOfDice == numberOfDice;
+    }
 }

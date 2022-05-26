@@ -9,11 +9,18 @@ public class SelectionManager : Singleton<SelectionManager>
 {
     [SerializeField] RollGroupDisplay activeGroupDisplay;
     [SerializeField] RollOutcomesDisplay lastRolledDisplay;
+    [SerializeField] RollOutcomesDisplay selectedHistoryDisplay;
+    [SerializeField] RollGroupDisplay editableDisplay;
+    [SerializeField] Canvas editingCanvas;
 
     int selectedRollGroupIndex;
+    int selectedHistoryGroupIndex;
 
-    public static RollGroupDisplay ActiveGroupDisplay { get => Instance.activeGroupDisplay; }
-    public static RollOutcomesDisplay LastRolledDisplay { get => Instance.lastRolledDisplay; }
+    public static RollGroupDisplay ActiveGroupDisplay => Instance.activeGroupDisplay;
+    public static RollOutcomesDisplay LastRolledDisplay => Instance.lastRolledDisplay;
+    public static RollOutcomesDisplay SelectedHistoryDisplay => Instance.selectedHistoryDisplay;
+    public static RollGroupDisplay EditableDisplay => Instance.editableDisplay;
+    public static Canvas EditingOverlay => Instance.editingCanvas;
 
     public static RollGroup SelectedRollGroup
     {
@@ -38,12 +45,38 @@ public class SelectionManager : Singleton<SelectionManager>
         }
     }
 
+    public static RollOutcomeGroup SelectedHistoryGroup
+    {
+        get => RollGroupStorage.GetHistoryAtIndex(Instance.selectedHistoryGroupIndex);
+        set
+        {
+            if (RollGroupStorage.LoadedHistory.Contains(value))
+            {
+                Instance.selectedHistoryGroupIndex = RollGroupStorage.LoadedHistory.IndexOf(value);
+                onHistoryGroupSelected?.Invoke();
+            }
+        }
+    }
+
+    public static int SelectedHistoryGroupIndex
+    {
+        get => Instance.selectedHistoryGroupIndex;
+        set
+        {
+            Instance.selectedHistoryGroupIndex = value;
+            onHistoryGroupSelected?.Invoke();
+        }
+    }
+
     public static event System.Action onGroupSelected;
+    public static event System.Action onHistoryGroupSelected;
 
     private void Awake()
     {
-        RollGroupStorage.onLoadedGroupsUpdated += UpdateSelectedGroupIndex;
+        RollGroupStorage.onLoadedDataDirty += UpdateSelectedGroupIndex;
+        RollGroupStorage.onLoadedDataDirty += UpdateSelectedOutcomeIndex;
         onGroupSelected += UpdateActiveSelectedDisplay;
+        onHistoryGroupSelected += UpdateSelectedOutcomeDisplay;
     }
 
     private void UpdateSelectedGroupIndex()
@@ -54,6 +87,17 @@ public class SelectionManager : Singleton<SelectionManager>
 
     private void UpdateActiveSelectedDisplay()
     {
-        ActiveGroupDisplay.SetRollGroup(SelectedRollGroup.Clone());
+        ActiveGroupDisplay.SetRollGroup(SelectedRollGroup);
+    }
+
+    private void UpdateSelectedOutcomeIndex()
+    {
+        selectedHistoryGroupIndex = Mathf.Clamp(selectedHistoryGroupIndex, 0, RollGroupStorage.LoadedHistoryCount - 1);
+        UpdateSelectedOutcomeDisplay();
+    }
+
+    private void UpdateSelectedOutcomeDisplay()
+    {
+        SelectedHistoryDisplay.SetRollOutcomeGroup(SelectedHistoryGroup);
     }
 }

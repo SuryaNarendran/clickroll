@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [System.Serializable]
 public class RollOutcomeGroup
@@ -31,6 +32,28 @@ public class RollOutcomeGroup
         for(int i=0;i < rollOutcomes.Length; i++)
         {
             total += rollOutcomes[i].EvaluateAndRecord();
+        }
+
+        foreach (Modifier modifier in rollGroup.modifiers)
+        {
+            total += modifier.Evaluate();
+        }
+
+        return total;
+    }
+
+    public int EvaluateAndRecord(List<RollDiceSelection> rollDiceSelections)
+    {
+        int total = 0;
+        for (int i = 0; i < rollOutcomes.Length; i++)
+        {
+            Roll roll = rollOutcomes[i].roll;
+            if (rollDiceSelections.Any(x => x.roll.Equals(roll)))
+            {
+                RollDiceSelection selection = rollDiceSelections.FirstOrDefault(x => x.roll.Equals(roll));
+                total += rollOutcomes[i].EvaluateAndRecord(selection.diceSelection);
+            }
+            else total += rollOutcomes[i].Total;
         }
 
         foreach (Modifier modifier in rollGroup.modifiers)

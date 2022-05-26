@@ -12,6 +12,8 @@ public class RollDisplay : MonoBehaviour, IRollDisplay
 
     private IRollGroupDisplay rollGroupDisplay;
 
+    public Roll currentData => roll;
+
     public void Refresh()
     {
         nameText.text = roll.name;

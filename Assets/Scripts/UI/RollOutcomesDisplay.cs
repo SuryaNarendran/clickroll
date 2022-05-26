@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Linq;
 
 public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
 {
@@ -12,6 +13,8 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
     [SerializeField] RectTransform contentHolder;
     [SerializeField] TMP_Text textLabel;
     [SerializeField] TMP_Text totalValueLabel;
+    [SerializeField] TMP_Text summationLabel;
+    [SerializeField] bool abbreviatedDisplay = false;
 
     private List<IRollOutcomeDisplay> rollOutcomeDisplayFields;
     private List<IModifierDisplay> modifierDisplayFields;
@@ -23,16 +26,27 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
 
         RefreshMembers();
         DisplayName();
+        DisplayTotal();
     }
 
-    public void EvaluateAndRecord()
+    public void SetRollOutcomeGroup(RollOutcomeGroup newData)
     {
-        rollOutcomeGroup.EvaluateAndRecord();
+        rollOutcomeGroup = newData;
         RefreshMembers();
         DisplayName();
         DisplayTotal();
     }
 
+    public void EvaluateAndRecord()
+    {
+        if (rollOutcomeGroup != null)
+        {
+            rollOutcomeGroup.EvaluateAndRecord();
+            RefreshMembers();
+            DisplayName();
+            DisplayTotal();
+        }
+    }
     public void EvaluateAndRecord(RollGroup rollGroup)
     {
         rollOutcomeGroup = new RollOutcomeGroup(rollGroup);
@@ -41,12 +55,24 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
 
     public void RefreshMembers()
     {
+
         foreach (IRollOutcomeDisplay rollDisplay in rollOutcomeDisplayFields)
         {
             rollDisplay.transform.SetParent(UIPooler.releasedObjectParent);
             PoolManager.ReleaseObject(rollDisplay.gameObject);
         }
         rollOutcomeDisplayFields.Clear();
+
+        foreach (IModifierDisplay modifierDisplay in modifierDisplayFields)
+        {
+            modifierDisplay.transform.SetParent(UIPooler.releasedObjectParent);
+            PoolManager.ReleaseObject(modifierDisplay.gameObject);
+        }
+        modifierDisplayFields.Clear();
+
+        //if in abbreviated display mode, don't spawn any more sub-fields
+        if (abbreviatedDisplay) return;
+        if (rollOutcomeGroup == null) return;
 
         foreach (RollOutcome rollOutcome in rollOutcomeGroup.rollOutcomes)
         {
@@ -57,13 +83,6 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
 
             go.transform.SetParent(contentHolder);
         }
-
-        foreach (IModifierDisplay modifierDisplay in modifierDisplayFields)
-        {
-            modifierDisplay.transform.SetParent(UIPooler.releasedObjectParent);
-            PoolManager.ReleaseObject(modifierDisplay.gameObject);
-        }
-        modifierDisplayFields.Clear();
 
         foreach (Modifier modifier in rollOutcomeGroup.rollGroup.modifiers)
         {
@@ -81,16 +100,23 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentHolder);
     }
 
-    public RollOutcomeGroup GetRollGroupCopy()
+    public RollOutcomeGroup GetRollOutcomeGroupCopy()
     {
         return rollOutcomeGroup.Clone();
+    }
+
+    public bool HoldsOutcomeGroup(RollOutcomeGroup group)
+    {
+        return rollOutcomeGroup == group;
     }
 
     private void DisplayName()
     {
         if (textLabel != null)
         {
-            textLabel.text = rollOutcomeGroup.rollGroup.name;
+            if (rollOutcomeGroup != null)
+                textLabel.text = rollOutcomeGroup.rollGroup.name;
+            else textLabel.text = "";
         }
     }
 
@@ -98,7 +124,30 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
     {
         if (totalValueLabel != null)
         {
-            totalValueLabel.text = rollOutcomeGroup.Total.ToString();
+            if (rollOutcomeGroup != null)
+                totalValueLabel.text = rollOutcomeGroup.Total.ToString();
+            else totalValueLabel.text = "";
+        }
+        if(summationLabel != null)
+        {
+            if (rollOutcomeGroup != null)
+            {
+                string output = "";
+                foreach (RollOutcome outcome in rollOutcomeGroup.rollOutcomes)
+                {
+                    output += outcome.diceOutcomes.Sum().ToString() + " + ";
+                }
+                foreach (Modifier modifier in rollOutcomeGroup.rollGroup.modifiers)
+                {
+                    output += modifier.value.ToString() + " + ";
+                }
+
+                if (output.Length > 3)
+                    output = output.Substring(0, output.Length - 3); //trim the last " + "
+
+                summationLabel.text = output;
+            }
+            else summationLabel.text = "";           
         }
     }
 }

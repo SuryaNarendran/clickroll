@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class GroupDeleteButtonHandler : MonoBehaviour
 {
-    [SerializeField] RollGroupDisplay rollGroupDisplay;
-
     public void Delete()
     {
-        rollGroupDisplay.DeleteReferencedGroup();
+        SelectionManager.ActiveGroupDisplay.DeleteReferencedGroup();
         RollGroupStorage.SaveToFile();
     }
 }

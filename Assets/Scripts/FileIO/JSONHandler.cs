@@ -11,26 +11,36 @@ public static class JSONHandler
     public class JsonSave
     {
         public RollGroup[] rollGroups;
+        public RollOutcomeGroup[] history;
 
-        public JsonSave(RollGroup[] rollGroups)
+        public JsonSave(RollGroup[] rollGroups, RollOutcomeGroup[] history)
         {
             this.rollGroups = rollGroups;
+            this.history = history;
+        }
+
+        public JsonSave()
+        {
+            this.rollGroups = new RollGroup[0];
+            this.history = new RollOutcomeGroup[0];
         }
     }
 
-    public static RollGroup[] LoadRollGroups()
+    public static JsonSave LoadData()
     {
-        if (File.Exists(path) == false) return new RollGroup[0];
+        if (File.Exists(path) == false) return new JsonSave();
 
         string jsonValue = File.ReadAllText(path);
         JsonSave jsonSave = JsonUtility.FromJson<JsonSave>(jsonValue);
 
-        return jsonSave.rollGroups;
+        if (jsonSave == null) return new JsonSave();
+
+        return jsonSave;
     }
 
-    public static void SaveRollGroups(List<RollGroup> rollGroups)
+    public static void SaveData(List<RollGroup> rollGroups, List<RollOutcomeGroup> history)
     {
-        JsonSave jsonSave = new JsonSave(rollGroups.ToArray());
+        JsonSave jsonSave = new JsonSave(rollGroups.ToArray(), history.ToArray());
         string jsonValue = JsonUtility.ToJson(jsonSave);
         File.WriteAllText(path, jsonValue);
     }

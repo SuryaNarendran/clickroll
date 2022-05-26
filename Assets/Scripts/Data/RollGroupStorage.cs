@@ -9,26 +9,34 @@ using System.Linq;
 public class RollGroupStorage : Singleton<RollGroupStorage>
 {
     [SerializeField] List<RollGroup> loadedGroups;
+    [SerializeField] List<RollOutcomeGroup> loadedHistory;
 
-    public static event System.Action onLoadedGroupsUpdated;
+    bool loadedDataDirty = false;
+
+    public static event System.Action onLoadedDataDirty;
 
     public static void LoadFromFile()
     {
-        Instance.loadedGroups = JSONHandler.LoadRollGroups().ToList();
+
+        var saveData = JSONHandler.LoadData();
+        Instance.loadedGroups = saveData.rollGroups.ToList();
+        Instance.loadedHistory = saveData.history.ToList();
         //makes sure that at least one group exists.
         if (Instance.loadedGroups.Count == 0) Instance.loadedGroups.Add(new RollGroup());
 
-        onLoadedGroupsUpdated?.Invoke();
+        Instance.loadedDataDirty = true;
     }
 
     public static void SaveToFile()
     {
-        JSONHandler.SaveRollGroups(Instance.loadedGroups);
+        JSONHandler.SaveData(Instance.loadedGroups, Instance.loadedHistory);
     }
 
     public static int LoadedGroupCount => Instance.loadedGroups.Count;
+    public static int LoadedHistoryCount => Instance.loadedHistory.Count;
 
     public static IReadOnlyList<RollGroup> LoadedRollGroups { get => Instance.loadedGroups; } 
+    public static IReadOnlyList<RollOutcomeGroup> LoadedHistory { get => Instance.loadedHistory; }
 
     public static RollGroup GetAtIndex(int index)
     {
@@ -46,9 +54,11 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
         if (index >= 0)
         {
             Instance.loadedGroups[index] = newData;
-            onLoadedGroupsUpdated?.Invoke();
+            onLoadedDataDirty?.Invoke();
             SelectionManager.SelectedRollGroup = newData;
         }
+
+        Instance.loadedDataDirty = true;
     }
 
     public static void AddGroup(RollGroup group)
@@ -56,7 +66,7 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
         if (Instance.loadedGroups.Contains(group) == false)
             Instance.loadedGroups.Add(group);
 
-        onLoadedGroupsUpdated?.Invoke();
+        Instance.loadedDataDirty = true;
     }
 
     public static void RemoveGroup(RollGroup group)
@@ -67,16 +77,47 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
         //makes sure that at least one group exists.
         if (Instance.loadedGroups.Count == 0) Instance.loadedGroups.Add(new RollGroup());
 
-        onLoadedGroupsUpdated?.Invoke();
+        Instance.loadedDataDirty = true;
+    }
+
+    public static RollOutcomeGroup GetHistoryAtIndex(int index)
+    {
+        return Instance.loadedHistory.ElementAtOrDefault(index);
+    }
+
+    public static int IndexOf(RollOutcomeGroup group)
+    {
+        return Instance.loadedHistory.IndexOf(group);
+    }
+
+    public static void AddHistory(RollOutcomeGroup group, int positionFromLast = 0)
+    {
+        Instance.loadedHistory.Insert(positionFromLast, group);
+        Instance.loadedDataDirty = true;
+    }
+
+    public static void ClearAllHistory()
+    {
+        Instance.loadedHistory.Clear();
+        Instance.loadedDataDirty = true;
     }
 
     public static void TriggerRefresh()
     {
-        onLoadedGroupsUpdated?.Invoke();
+        onLoadedDataDirty?.Invoke();
     }
 
     private void Start()
     {
         LoadFromFile();
+    }
+
+    private void Update()
+    {
+        if (loadedDataDirty)
+        {
+            onLoadedDataDirty?.Invoke();
+            loadedDataDirty = false;
+        }
     }
 }

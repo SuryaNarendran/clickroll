@@ -29,6 +29,8 @@ public class RollEntryField : MonoBehaviour, IRollDisplay
         diceValueInput.text = roll.diceValue.ToString();
     }
 
+    public Roll currentData => roll;
+
     public void SetData(Roll roll, IRollGroupDisplay rollGroupDisplay = null)
     {
         this.roll = roll;
@@ -68,6 +70,8 @@ public class RollEntryField : MonoBehaviour, IRollDisplay
         }
 
     }
+
+
 
     private void UpdateData()
     {

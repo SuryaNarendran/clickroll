@@ -14,11 +14,12 @@ public class RollGroupDisplay : MonoBehaviour, IRollGroupDisplay
     [SerializeField] RectTransform contentHolder;
     [SerializeField] TMP_Text textLabel;
     [SerializeField] TMP_InputField inputFieldLabel;
-    [SerializeField] bool triggerDataRefreshOnUpdate = false;
     [SerializeField] int memberDisplayLimit = 20;
 
     private List<IRollDisplay> rollDisplayFields;
     private List<IModifierDisplay> modifierDisplayFields;
+
+    private Dictionary<IRollGroupMember, Color> colorCodeLookup; //NOTE: extend this later to handle index changes
 
     public event System.Action onDataUpdated;
 
@@ -41,15 +42,9 @@ public class RollGroupDisplay : MonoBehaviour, IRollGroupDisplay
     {
         rollDisplayFields = new List<IRollDisplay>();
         modifierDisplayFields = new List<IModifierDisplay>();
-
-        onDataUpdated += TriggerRefresh;
+        colorCodeLookup = new Dictionary<IRollGroupMember, Color>();
 
         initialized = true;
-    }
-
-    private void TriggerRefresh()
-    {
-        if (triggerDataRefreshOnUpdate) RollGroupStorage.TriggerRefresh();
     }
 
     public void RefreshMembers()
@@ -85,6 +80,14 @@ public class RollGroupDisplay : MonoBehaviour, IRollGroupDisplay
             rollDisplayFields.Add(rollDisplay);
             rollDisplay.SetData(roll, this);
 
+            ColorableDisplay colorableDisplay = go.GetComponent<ColorableDisplay>();
+            if (colorableDisplay)
+            {
+                if (colorCodeLookup.ContainsKey(roll))
+                    colorableDisplay.SetColor(colorCodeLookup[roll]);
+                else colorableDisplay.ResetColor();
+            }
+
             go.transform.SetParent(contentHolder);
         }
 
@@ -97,6 +100,14 @@ public class RollGroupDisplay : MonoBehaviour, IRollGroupDisplay
             IModifierDisplay modifierDisplay = go.GetComponent<IModifierDisplay>();
             modifierDisplayFields.Add(modifierDisplay);
             modifierDisplay.SetData(modifier, this);
+
+            ColorableDisplay colorableDisplay = go.GetComponent<ColorableDisplay>();
+            if (colorableDisplay)
+            {
+                if (colorCodeLookup.ContainsKey(modifier))
+                    colorableDisplay.SetColor(colorCodeLookup[modifier]);
+                else colorableDisplay.ResetColor();
+            }
 
             go.transform.SetParent(contentHolder);
         }
@@ -199,6 +210,24 @@ public class RollGroupDisplay : MonoBehaviour, IRollGroupDisplay
     public int GroupStorageIndex()
     {
         return RollGroupStorage.IndexOf(rollGroup);
+    }
+
+    public void SetColor(IRollGroupMember rollGroupMember, Color color)
+    {
+        if (colorCodeLookup.ContainsKey(rollGroupMember))
+            colorCodeLookup[rollGroupMember] = color;
+        else colorCodeLookup.Add(rollGroupMember, color);       
+    }
+
+    public void ResetColor(IRollGroupMember rollGroupMember)
+    {
+        if (colorCodeLookup.ContainsKey(rollGroupMember))
+            colorCodeLookup.Remove(rollGroupMember);
+    }
+
+    public void ResetAllColors()
+    {
+        colorCodeLookup.Clear();
     }
 
     private void DisplayName()

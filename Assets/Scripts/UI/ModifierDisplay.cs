@@ -12,6 +12,8 @@ public class ModifierDisplay : MonoBehaviour, IModifierDisplay
 
     private IRollGroupDisplay rollGroupDisplay;
 
+    public Modifier currentData => modifier;
+
     public void Refresh()
     {
         nameText.text = modifier.name;

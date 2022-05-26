@@ -19,4 +19,11 @@ public struct Modifier: IRollGroupMember
     {
         return value;
     }
+
+    public override bool Equals(object obj)
+    {
+        return
+            obj is Modifier &&
+            ((Modifier)obj).value == value;
+    }
 }

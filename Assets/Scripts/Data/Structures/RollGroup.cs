@@ -43,4 +43,11 @@ public class RollGroup
     {
         return new RollGroup(new List<Roll>(rolls), new List<Modifier>(modifiers), name);
     }
+
+    public bool IsDataEquivalent(RollGroup rollGroup)
+    {
+        string myString = JsonUtility.ToJson(this);
+        string otherString = JsonUtility.ToJson(rollGroup);
+        return myString == otherString;
+    }
 }
