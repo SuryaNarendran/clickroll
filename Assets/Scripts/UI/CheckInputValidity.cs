@@ -14,10 +14,21 @@ public class CheckInputValidity : MonoBehaviour
 
     public event System.Action<bool> onInputValidityChecked;
 
+    private bool initialized = false;
+
     private void Start()
     {
-        editableDisplay.onDataUpdated += ValidateData;
-        onInputValidityChecked += SetSaveButtonEnabled;
+        if (!initialized) FirstTimeSetup();
+    }
+
+    public void FirstTimeSetup()
+    {
+        if (!initialized)
+        {
+            editableDisplay.onDataUpdated += ValidateData;
+            onInputValidityChecked += SetSaveButtonEnabled;
+            initialized = true;
+        }
     }
 
     private void ValidateData()
@@ -27,7 +38,13 @@ public class CheckInputValidity : MonoBehaviour
         bool inputValid = true;
         editableDisplay.ResetAllColors();
 
-        if (data.name.Length == 0)
+        if(data == null)
+        {
+            onInputValidityChecked?.Invoke(false);
+            return;
+        }
+
+        if (data.name == null || data.name.Length == 0)
         {
             inputValid = false;
 

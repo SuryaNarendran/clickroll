@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RerollButtonHandler : MonoBehaviour
+public class RerollSelectedButtonHandler : MonoBehaviour
 {
     [SerializeField] RerollSelection rerollSelection;
     public void OnPressed()
     {
         if (rerollSelection == null) return;
-        rerollSelection.Reroll(false);
+        rerollSelection.Reroll(true);
     }
 }

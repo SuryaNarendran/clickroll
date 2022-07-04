@@ -7,6 +7,7 @@ public class GroupEditButtonHandler : MonoBehaviour
     public void EditSelectedGroup()
     {
         SelectionManager.EditingOverlay.gameObject.SetActive(true);
+        SelectionManager.CurrentEditingMode = SelectionManager.EditingMode.EditGroup;
         SelectionManager.EditableDisplay.SetRollGroup(SelectionManager.SelectedRollGroup.Clone());
     }
 }

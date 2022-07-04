@@ -6,9 +6,8 @@ public class AddGroupButtonHandler : MonoBehaviour
 {
     public void AddGroup()
     {
-        RollGroupStorage.AddGroup(new RollGroup());
-        SelectionManager.SelectedRollGroupIndex = RollGroupStorage.LoadedGroupCount - 1;
         SelectionManager.EditingOverlay.gameObject.SetActive(true);
-        SelectionManager.EditableDisplay.SetRollGroup(SelectionManager.SelectedRollGroup.Clone());
+        SelectionManager.CurrentEditingMode = SelectionManager.EditingMode.AddGroup;
+        SelectionManager.EditableDisplay.SetRollGroup(new RollGroup());
     }
 }

@@ -128,6 +128,7 @@ public class RollGroupDisplay : MonoBehaviour, IRollGroupDisplay
         rollGroup = newGroup;
         RefreshMembers();
         DisplayName();
+        onDataUpdated?.Invoke();
     }
 
     public void UpdateRollGroupData(IRollDisplay rollDisplay, Roll roll)

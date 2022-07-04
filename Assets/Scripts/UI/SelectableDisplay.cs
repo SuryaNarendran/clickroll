@@ -3,42 +3,66 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class SelectableDisplay : MonoBehaviour
 {
+    
     [SerializeField] Image highlightImage;
     [SerializeField] Color highlightedColor;
     [SerializeField] Color normalColor;
-    [SerializeField] bool allowUserSelect;
-    [SerializeField] bool allowUserDeselect;
+    [SerializeField] public bool allowUserSelect;
+    [SerializeField] public bool allowUserDeselect;
 
-    public event System.Action<Transform> onSelect;
-    public event System.Action<Transform> onDeselect;
+    [SerializeField] UnityEvent onSelected;
+    [SerializeField] UnityEvent onDeselected;
+
+    public event System.Action<Transform> onUserSelect;
+    public event System.Action<Transform> onUserDeselect;
+
+    private bool selected = false;
+    public bool Selected => false;
+
+    Selectable unitySelectableComponent;
+
+    private void Awake()
+    {
+        unitySelectableComponent = GetComponent<Selectable>();
+    }
+
+    private void OnEnable()
+    {
+        //if (unitySelectableComponent) unitySelectableComponent.
+    }
 
     public void UserSelect()
     {
-        if (allowUserSelect) Select();
+        if (allowUserSelect)
+        {
+            onUserSelect?.Invoke(transform);
+        }
     }
 
     public void UserDeselect()
     {
-        if (allowUserDeselect) Deselect();
+        if (allowUserDeselect)
+        {
+            onUserDeselect?.Invoke(transform);
+        }
     }
 
-    public void Select()
+    public void SetSelected(bool state)
     {
-        highlightImage.color = highlightedColor;
-        onSelect?.Invoke(transform);
-    }
-
-    public void Deselect()
-    {
-        highlightImage.color = normalColor;
-        onDeselect?.Invoke(transform);
-    }
-
-    public void SetHighlight(bool state)
-    {
+        selected = state;
         highlightImage.color = state ? highlightedColor : normalColor;
+
+        if (selected) onSelected?.Invoke();
+        else onDeselected?.Invoke();
+    }
+
+    public void UserToggleSelect()
+    {
+        if (selected) UserDeselect();
+        else UserSelect();
     }
 }

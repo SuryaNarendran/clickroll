@@ -14,6 +14,7 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
     [SerializeField] TMP_Text textLabel;
     [SerializeField] TMP_Text totalValueLabel;
     [SerializeField] TMP_Text summationLabel;
+    [SerializeField] SelectableUISet selectableUISet;
     [SerializeField] bool abbreviatedDisplay = false;
 
     private List<IRollOutcomeDisplay> rollOutcomeDisplayFields;
@@ -35,6 +36,7 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
         RefreshMembers();
         DisplayName();
         DisplayTotal();
+        selectableUISet?.DeselectAll();
     }
 
     public void EvaluateAndRecord()
@@ -53,13 +55,36 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
         EvaluateAndRecord();
     }
 
+    public void EvaluateAndRecord(RollOutcomeGroup rollOutcomeGroup)
+    {
+        this.rollOutcomeGroup = rollOutcomeGroup;
+        EvaluateAndRecord();
+    }
+
+    public void EvaluateAndRecord(RollOutcomeGroup rollOutcomeGroup, List<RollDiceSelection> rollDiceSelections)
+    {
+        this.rollOutcomeGroup = rollOutcomeGroup;
+        EvaluateAndRecord(rollDiceSelections);
+    }
+
+    public void EvaluateAndRecord(List<RollDiceSelection> rollDiceSelections)
+    {
+        if (rollOutcomeGroup != null)
+        {
+            rollOutcomeGroup.EvaluateAndRecord(rollDiceSelections);
+            RefreshMembers();
+            DisplayName();
+            DisplayTotal();
+        }
+    }
+
     public void RefreshMembers()
     {
-
         foreach (IRollOutcomeDisplay rollDisplay in rollOutcomeDisplayFields)
         {
             rollDisplay.transform.SetParent(UIPooler.releasedObjectParent);
             PoolManager.ReleaseObject(rollDisplay.gameObject);
+            selectableUISet?.Remove(rollDisplay.transform);
         }
         rollOutcomeDisplayFields.Clear();
 
@@ -82,6 +107,7 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
             rollDisplay.SetData(rollOutcome, this);
 
             go.transform.SetParent(contentHolder);
+            selectableUISet?.Add(go.transform);
         }
 
         foreach (Modifier modifier in rollOutcomeGroup.rollGroup.modifiers)
@@ -94,6 +120,7 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
             go.transform.SetParent(contentHolder);
         }
 
+        selectableUISet?.OnUIUpdateFinished();
         //ensures that the vertical layout group arranges the spawned children correctly
         //don't ask me why this works properly only if you call it twice??
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentHolder);

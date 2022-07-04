@@ -4,6 +4,6 @@ using UnityEngine;
 
 public struct RollDiceSelection
 {
-    [SerializeField] public Roll roll;
-    [SerializeField] public int[] diceSelection;
+    [SerializeField] public int rollIndex;
+    [SerializeField] public int[] diceExclusions;
 }

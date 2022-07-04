@@ -7,9 +7,16 @@ public class SaveButtonHandler : MonoBehaviour
 {
     public void Save()
     {
-        RollGroupStorage.UpdateSelectedRollGroup(SelectionManager.EditableDisplay.GetRollGroupCopy());
-        RollGroupStorage.SaveToFile();
+        if(SelectionManager.CurrentEditingMode == SelectionManager.EditingMode.EditGroup)
+        {
+            RollGroupStorage.UpdateSelectedRollGroup(SelectionManager.EditableDisplay.GetRollGroupCopy());
+        }
+        else if(SelectionManager.CurrentEditingMode == SelectionManager.EditingMode.AddGroup)
+        {
+            RollGroupStorage.AddGroup(SelectionManager.EditableDisplay.GetRollGroupCopy());
+        }
 
+        RollGroupStorage.SaveToFile();
         SelectionManager.EditingOverlay.gameObject.SetActive(false);
     }
 }

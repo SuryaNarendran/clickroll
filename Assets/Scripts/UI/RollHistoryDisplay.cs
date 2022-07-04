@@ -8,25 +8,21 @@ public class RollHistoryDisplay : Singleton<RollHistoryDisplay>
 {
     [SerializeField] GameObject rollOutcomeGroupDisplayPrefab;
     [SerializeField] RectTransform contentHolder;
+    [SerializeField] SelectableUISet selectableUISet;
 
     private List<RollOutcomesDisplay> groupDisplayBoxes;
-
-    public SelectableDisplay currentlySelected { get; private set; }
 
     private void Awake()
     {
         groupDisplayBoxes = new List<RollOutcomesDisplay>();
-
         RollGroupStorage.onLoadedDataDirty += RefreshMembers;
-
-        SelectionManager.onHistoryGroupSelected += UpdateHighlighting;
     }
 
     public void RefreshMembers()
     {
         foreach (RollOutcomesDisplay rollOutcomeBox in groupDisplayBoxes)
         {
-            rollOutcomeBox.GetComponent<SelectableDisplay>().onSelect -= OnBoxSelected;
+            selectableUISet.Remove(rollOutcomeBox.transform);
 
             rollOutcomeBox.transform.SetParent(UIPooler.releasedObjectParent);
             PoolManager.ReleaseObject(rollOutcomeBox.gameObject);
@@ -37,9 +33,8 @@ public class RollHistoryDisplay : Singleton<RollHistoryDisplay>
         {
             GameObject go = PoolManager.SpawnObject(rollOutcomeGroupDisplayPrefab);
             RollOutcomesDisplay rollOutcomeDisplay = go.GetComponent<RollOutcomesDisplay>();
-            var selectable = go.GetComponent<SelectableDisplay>();
-            selectable.onSelect += OnBoxSelected;
-            selectable.SetHighlight(false);
+
+            selectableUISet.Add(rollOutcomeDisplay.transform);
 
 
             groupDisplayBoxes.Add(rollOutcomeDisplay);
@@ -48,41 +43,12 @@ public class RollHistoryDisplay : Singleton<RollHistoryDisplay>
             go.transform.SetParent(contentHolder);
         }
 
+        //selectableUISet.SelectDefault();
+        selectableUISet.OnUIUpdateFinished();
+
         //ensures that the vertical layout group arranges the spawned children correctly
         //don't ask me why this works properly only if you call it twice??
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentHolder);
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentHolder);
-
-        if (CurrentlySelectedDisplay)
-        {
-            currentlySelected = CurrentlySelectedDisplay.GetComponent<SelectableDisplay>();
-            currentlySelected.SetHighlight(true);
-            //NOTE: selection does not happen properly at start up
-        }
     }
-
-    public void SelectGroup(RollOutcomesDisplay rollOutcomesDisplay)
-    {
-        SelectionManager.SelectedHistoryGroup = 
-            RollGroupStorage.GetHistoryAtIndex(groupDisplayBoxes.IndexOf(rollOutcomesDisplay));
-    }
-
-    private void OnBoxSelected(Transform box)
-    {
-        RollOutcomesDisplay rollOutcomesDisplay = box.GetComponent<RollOutcomesDisplay>();
-        SelectGroup(rollOutcomesDisplay);
-    }
-
-    private void UpdateHighlighting()
-    {
-        currentlySelected?.SetHighlight(false);
-        if (CurrentlySelectedDisplay)
-        {
-            currentlySelected = CurrentlySelectedDisplay.GetComponent<SelectableDisplay>();
-            currentlySelected.SetHighlight(true);
-        }
-    }
-
-    private RollOutcomesDisplay CurrentlySelectedDisplay
-        => groupDisplayBoxes.FirstOrDefault(x => x.HoldsOutcomeGroup(SelectionManager.SelectedHistoryGroup));
 }

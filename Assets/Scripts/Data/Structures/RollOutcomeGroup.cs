@@ -48,10 +48,10 @@ public class RollOutcomeGroup
         for (int i = 0; i < rollOutcomes.Length; i++)
         {
             Roll roll = rollOutcomes[i].roll;
-            if (rollDiceSelections.Any(x => x.roll.Equals(roll)))
+            if (rollDiceSelections.Any(x => x.rollIndex == i))
             {
-                RollDiceSelection selection = rollDiceSelections.FirstOrDefault(x => x.roll.Equals(roll));
-                total += rollOutcomes[i].EvaluateAndRecord(selection.diceSelection);
+                RollDiceSelection selection = rollDiceSelections.FirstOrDefault(x => x.rollIndex == i);
+                total += rollOutcomes[i].EvaluateAndRecord(selection.diceExclusions);
             }
             else total += rollOutcomes[i].Total;
         }
