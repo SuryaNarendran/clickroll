@@ -29,7 +29,7 @@ public class RollHistoryDisplay : Singleton<RollHistoryDisplay>
         }
         groupDisplayBoxes.Clear();
 
-        foreach (RollOutcomeGroup rollOutcome in RollGroupStorage.LoadedHistory)
+        foreach (RollOutcomeGroup rollOutcome in RollGroupStorage.LoadedHistoryOutcomes)
         {
             GameObject go = PoolManager.SpawnObject(rollOutcomeGroupDisplayPrefab);
             RollOutcomesDisplay rollOutcomeDisplay = go.GetComponent<RollOutcomesDisplay>();

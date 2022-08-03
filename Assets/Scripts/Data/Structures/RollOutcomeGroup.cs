@@ -8,10 +8,12 @@ public class RollOutcomeGroup
 {
     [SerializeField] public RollGroup rollGroup;
     [SerializeField] public RollOutcome[] rollOutcomes;
+    [SerializeField] public RollDiceSelection[] rerollSelections;
 
     public RollOutcomeGroup(RollGroup rollGroup)
     {
         this.rollGroup = rollGroup;
+        this.rerollSelections = new RollDiceSelection[0];
         rollOutcomes = new RollOutcome[rollGroup.rolls.Count];
 
         for(int i = 0; i < rollGroup.rolls.Count; i++)
@@ -24,6 +26,14 @@ public class RollOutcomeGroup
     {
         this.rollGroup = rollGroup;
         this.rollOutcomes = rollOutcomes;
+        this.rerollSelections = new RollDiceSelection[0];
+    }
+
+    public RollOutcomeGroup(RollGroup rollGroup, RollOutcome[] rollOutcomes, RollDiceSelection[] rerollSelections)
+    {
+        this.rollGroup = rollGroup;
+        this.rollOutcomes = rollOutcomes;
+        this.rerollSelections = rerollSelections;
     }
 
     public int EvaluateAndRecord()
@@ -44,13 +54,15 @@ public class RollOutcomeGroup
 
     public int EvaluateAndRecord(List<RollDiceSelection> rollDiceSelections)
     {
+        rerollSelections = rollDiceSelections.ToArray();
+
         int total = 0;
         for (int i = 0; i < rollOutcomes.Length; i++)
         {
             Roll roll = rollOutcomes[i].roll;
-            if (rollDiceSelections.Any(x => x.rollIndex == i))
+            if (rerollSelections.Any(x => x.rollIndex == i))
             {
-                RollDiceSelection selection = rollDiceSelections.FirstOrDefault(x => x.rollIndex == i);
+                RollDiceSelection selection = rerollSelections.First(x => x.rollIndex == i);
                 total += rollOutcomes[i].EvaluateAndRecord(selection.diceExclusions);
             }
             else total += rollOutcomes[i].Total;
@@ -77,8 +89,22 @@ public class RollOutcomeGroup
 
     public RollOutcomeGroup Clone()
     {
-        RollOutcome[] copyOfRollOutcomes = new RollOutcome[rollGroup.rolls.Count];
-        rollOutcomes.CopyTo(copyOfRollOutcomes, 0);
-        return new RollOutcomeGroup(rollGroup.Clone(), copyOfRollOutcomes);
+        RollOutcome[] copyOfRollOutcomes = new RollOutcome[rollOutcomes.Length];
+        
+            RollDiceSelection[] copyOfRerollSelections;
+        if (rerollSelections != null) copyOfRerollSelections = new RollDiceSelection[rerollSelections.Length];
+        else copyOfRerollSelections = new RollDiceSelection[0];
+
+        for (int i = 0; i < rollOutcomes.Length; i++)
+        {
+            copyOfRollOutcomes[i] = rollOutcomes[i].Clone();
+        }
+
+        for (int i = 0; i < rerollSelections.Length; i++)
+        {
+            copyOfRerollSelections[i] = rerollSelections[i].Clone();
+        }
+
+        return new RollOutcomeGroup(rollGroup.Clone(), copyOfRollOutcomes, copyOfRerollSelections);
     }
 }

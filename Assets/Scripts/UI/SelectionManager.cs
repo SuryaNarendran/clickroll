@@ -16,6 +16,8 @@ public class SelectionManager : Singleton<SelectionManager>
 
     [SerializeField] SelectableUISet rollSets;
     [SerializeField] SelectableUISet historyScroller;
+    [SerializeField] DiceSelector diceSelectorUI;
+    [SerializeField] RerollSelection rerollSelection;
 
 
     int selectedRollGroupIndex;
@@ -25,7 +27,12 @@ public class SelectionManager : Singleton<SelectionManager>
     public static RollOutcomesDisplay LastRolledDisplay => Instance.lastRolledDisplay;
     public static RollOutcomesDisplay SelectedHistoryDisplay => Instance.selectedHistoryDisplay;
     public static RollGroupDisplay EditableDisplay => Instance.editableDisplay;
+    public static DiceSelector DiceSelectorUI => Instance.diceSelectorUI;
+    public static RerollSelection RerollSelectionUI => Instance.rerollSelection;
     public static Canvas EditingOverlay => Instance.editingCanvas;
+
+    public static System.Action onSelectedHistoryIndexUpdated;
+    public static System.Action onSelectedRollGroupUpdated;
 
     public enum EditingMode { EditGroup, AddGroup}
     public static EditingMode CurrentEditingMode;
@@ -38,7 +45,6 @@ public class SelectionManager : Singleton<SelectionManager>
             if (RollGroupStorage.LoadedRollGroups.Contains(value))
             {
                 SelectedRollGroupIndex = RollGroupStorage.LoadedRollGroups.IndexOf(value);
-                Instance.rollSets.Select(RollGroupStorage.LoadedRollGroups.IndexOf(value));
             } 
         }
     }
@@ -51,20 +57,19 @@ public class SelectionManager : Singleton<SelectionManager>
             if(value >= 0 && value < RollGroupStorage.LoadedGroupCount)
             {
                 Instance.selectedRollGroupIndex = value;
-                Instance.rollSets.Select(value);
+                onSelectedRollGroupUpdated?.Invoke();
             }
         }
     }
 
     public static RollOutcomeGroup SelectedHistoryGroup
     {
-        get => RollGroupStorage.GetHistoryAtIndex(SelectedHistoryGroupIndex);
+        get => RollGroupStorage.GetHistoryOutcomeAtIndex(SelectedHistoryGroupIndex);
         set
         {
-            if (RollGroupStorage.LoadedHistory.Contains(value))
+            if (RollGroupStorage.LoadedHistoryOutcomes.Contains(value))
             {
-                SelectedHistoryGroupIndex = RollGroupStorage.LoadedHistory.IndexOf(value);
-                Instance.historyScroller.Select(RollGroupStorage.LoadedHistory.IndexOf(value));
+                SelectedHistoryGroupIndex = RollGroupStorage.IndexOf(value);
             }
         }
     }
@@ -76,8 +81,8 @@ public class SelectionManager : Singleton<SelectionManager>
         {
             if (value >= 0 && value < RollGroupStorage.LoadedHistoryCount)
             {
-                SelectedHistoryGroupIndex = value;
-                Instance.historyScroller.Select(value);
+                Instance.selectedHistoryGroupIndex = value;
+                onSelectedHistoryIndexUpdated?.Invoke();
             }
         }
     }
@@ -100,7 +105,7 @@ public class SelectionManager : Singleton<SelectionManager>
 
     private void UpdateSelectedOutcomeDisplay(SelectableDisplay selectableDisplay)
     {
-        selectedHistoryGroupIndex = historyScroller.LastSelectionIndex;
+        SelectedHistoryGroupIndex = historyScroller.LastSelectionIndex;
         SelectedHistoryDisplay.SetRollOutcomeGroup(SelectedHistoryGroup);
     }
 

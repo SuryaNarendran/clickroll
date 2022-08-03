@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class RollOutcomeLabel : MonoBehaviour,IRollOutcomeDisplay
 {
@@ -11,7 +12,7 @@ public class RollOutcomeLabel : MonoBehaviour,IRollOutcomeDisplay
     [SerializeField] TMP_Text valueLabel;
     [SerializeField] TMP_Text outcomeLabel;
 
-
+    private RollDiceSelection rollDiceSelection;
     private RollOutcomesDisplay rollOutcomesDisplay;
 
     public void Refresh()
@@ -26,5 +27,23 @@ public class RollOutcomeLabel : MonoBehaviour,IRollOutcomeDisplay
         this.rollOutcome = rollOutcome;
         this.rollOutcomesDisplay = rollOutcomesDisplay;
         Refresh();
+    }
+
+    public void HighlightRerolls(RollDiceSelection rollDiceSelection)
+    {
+        this.rollDiceSelection = rollDiceSelection;
+
+        string outputString = "";
+        for (int i = 0; i < rollOutcome.diceOutcomes.Length; i++)
+        {
+            if (rollDiceSelection.diceExclusions.Contains(i))
+                outputString += rollOutcome.diceOutcomes[i].ToString();
+            else
+                outputString += "<color=blue>" + rollOutcome.diceOutcomes[i].ToString() + "</color>";
+
+            outputString += " + ";
+        }
+        outputString = outputString.Substring(0, outputString.Length - 3); //removes the last " + "
+        outcomeLabel.text = outputString + " = " + rollOutcome.Total;
     }
 }

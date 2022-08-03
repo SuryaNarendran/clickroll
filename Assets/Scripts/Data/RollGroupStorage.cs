@@ -9,7 +9,7 @@ using System.Linq;
 public class RollGroupStorage : Singleton<RollGroupStorage>
 {
     [SerializeField] List<RollGroup> loadedGroups;
-    [SerializeField] List<RollOutcomeGroup> loadedHistory;
+    [SerializeField] List<HistoryEntry> loadedHistory;
 
     bool loadedDataDirty = false;
 
@@ -36,7 +36,11 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
     public static int LoadedHistoryCount => Instance.loadedHistory.Count;
 
     public static IReadOnlyList<RollGroup> LoadedRollGroups { get => Instance.loadedGroups; } 
-    public static IReadOnlyList<RollOutcomeGroup> LoadedHistory { get => Instance.loadedHistory; }
+    public static IReadOnlyList<HistoryEntry> LoadedHistory { get => Instance.loadedHistory; }
+    public static IReadOnlyList<RollOutcomeGroup> LoadedHistoryOutcomes 
+    { 
+        get => Instance.loadedHistory.Select(x => x.rollOutcomeGroup).ToList(); 
+    }
 
     public static RollGroup GetAtIndex(int index)
     {
@@ -80,20 +84,39 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
         Instance.loadedDataDirty = true;
     }
 
-    public static RollOutcomeGroup GetHistoryAtIndex(int index)
+    public static RollOutcomeGroup GetHistoryOutcomeAtIndex(int index)
     {
-        return Instance.loadedHistory.ElementAtOrDefault(index);
+        return Instance.loadedHistory.ElementAtOrDefault(index).rollOutcomeGroup;
+    }
+
+    public static string GetHistoryNotesAtIndex(int index)
+    {
+        return Instance.loadedHistory.ElementAtOrDefault(index).notes;
     }
 
     public static int IndexOf(RollOutcomeGroup group)
     {
-        return Instance.loadedHistory.IndexOf(group);
+        HistoryEntry entry = Instance.loadedHistory.FirstOrDefault(x => x.rollOutcomeGroup == group);
+        if (entry == null) return -1;
+        return Instance.loadedHistory.IndexOf(entry);
     }
 
     public static void AddHistory(RollOutcomeGroup group, int positionFromLast = 0)
     {
-        Instance.loadedHistory.Insert(positionFromLast, group);
+        HistoryEntry entry = new HistoryEntry(group);
+        Instance.loadedHistory.Insert(positionFromLast, entry);
         Instance.loadedDataDirty = true;
+    }
+
+    public static void SetNotes(string notes, int index)
+    {
+        var history = Instance.loadedHistory.ElementAtOrDefault(index);
+        if (history == null) return;
+        history.notes = notes;
+    }
+    public static void SetNotes(string notes, RollOutcomeGroup group)
+    {
+        SetNotes(notes, IndexOf(group));
     }
 
     public static void ClearAllHistory()

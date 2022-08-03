@@ -107,14 +107,35 @@ public class SelectableUISet : MonoBehaviour
         }
     }
 
+    public void Deselect(int index)
+    {
+        if (index >= 0 && index < selectables.Count)
+        {
+            Deselect(selectables[index]);
+        }
+
+        else Debug.LogError("index out of range!");
+    }
+
     public void DeselectAll()
     {
         foreach (SelectableDisplay selectable in CurrentSelections)
         {
+            //consider adding an event call to onDeselect here
             selectable.SetSelected(false);
             selectionDataDirty = true;
         }
         currentSelectionIndices.Clear();
+    }
+
+    public void SelectAll()
+    {
+        if (allowMultiSelect == false) return;
+
+        foreach (SelectableDisplay selectable in Selectables)
+        {
+            Select(selectable);
+        }
     }
 
     public void Select(SelectableDisplay target)

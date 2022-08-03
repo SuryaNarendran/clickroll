@@ -11,9 +11,9 @@ public static class JSONHandler
     public class JsonSave
     {
         public RollGroup[] rollGroups;
-        public RollOutcomeGroup[] history;
+        public HistoryEntry[] history;
 
-        public JsonSave(RollGroup[] rollGroups, RollOutcomeGroup[] history)
+        public JsonSave(RollGroup[] rollGroups, HistoryEntry[] history)
         {
             this.rollGroups = rollGroups;
             this.history = history;
@@ -22,7 +22,7 @@ public static class JSONHandler
         public JsonSave()
         {
             this.rollGroups = new RollGroup[0];
-            this.history = new RollOutcomeGroup[0];
+            this.history = new HistoryEntry[0];
         }
     }
 
@@ -38,7 +38,7 @@ public static class JSONHandler
         return jsonSave;
     }
 
-    public static void SaveData(List<RollGroup> rollGroups, List<RollOutcomeGroup> history)
+    public static void SaveData(List<RollGroup> rollGroups, List<HistoryEntry> history)
     {
         JsonSave jsonSave = new JsonSave(rollGroups.ToArray(), history.ToArray());
         string jsonValue = JsonUtility.ToJson(jsonSave);

@@ -15,6 +15,12 @@ public struct RollOutcome
         diceOutcomes = new int[roll.numberOfDice];
     }
 
+    public RollOutcome(Roll roll, int[] diceOutcomes)
+    {
+        this.roll = roll;
+        this.diceOutcomes = diceOutcomes;
+    }
+
     public int EvaluateAndRecord()
     {
         int total = 0;
@@ -43,5 +49,12 @@ public struct RollOutcome
     public int Total
     {
         get => diceOutcomes.Sum();
+    }
+
+    public RollOutcome Clone()
+    {
+        int[] diceOutcomesCopy = new int[diceOutcomes.Length];
+        diceOutcomes.CopyTo(diceOutcomesCopy,0);
+        return new RollOutcome(roll, diceOutcomesCopy);
     }
 }
