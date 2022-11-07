@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.IO;
 
 /// <summary>
 /// manager class which holds currently loaded rollgroups
@@ -15,21 +16,73 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
 
     public static event System.Action onLoadedDataDirty;
 
-    public static void LoadFromFile()
+    public static void LoadFromFile(string path)
     {
+        //if(JSONHandler.PathIsValid(path) == false)
 
-        var saveData = JSONHandler.LoadData();
+        var saveData = JSONHandler.LoadData(path);
         Instance.loadedGroups = saveData.rollGroups.ToList();
         Instance.loadedHistory = saveData.history.ToList();
         //makes sure that at least one group exists.
-        if (Instance.loadedGroups.Count == 0) Instance.loadedGroups.Add(new RollGroup());
+        //if (Instance.loadedGroups.Count == 0) Instance.loadedGroups.Add(new RollGroup());
 
         Instance.loadedDataDirty = true;
+
+        CurrentlyLoadedLabel.UpdateText(Path.GetFileName(path));
+        SelectionManager.ClearAllDisplays();
+    }
+
+    public static void LoadFromFile()
+    {
+        string path = JSONHandler.GetLastAccessedPath();
+        if (path == string.Empty || JSONHandler.PathIsValid(path) == false)
+        {
+            LoadNewFile(false);
+            CurrentlyLoadedLabel.UpdateText("New File (Unsaved)");
+        }
+        else
+        {
+            LoadFromFile(path);
+        }
+    }
+
+    public static void LoadNewFile(bool saveToNewFilename)
+    {
+        Instance.loadedGroups.Clear();
+        Instance.loadedHistory.Clear();
+
+        if (saveToNewFilename)
+        {
+            string path = FileBrowserHandler.SaveFileDialog();
+            if (path == string.Empty)
+            {
+                CurrentlyLoadedLabel.UpdateText("New File (Unsaved)");
+            }
+            else
+            {
+                SaveToFile(path);
+                CurrentlyLoadedLabel.UpdateText(Path.GetFileName(path));
+            }
+        }
+
+        Instance.loadedDataDirty = true;
+        SelectionManager.ClearAllDisplays();
+    }
+
+    public static void SaveToFile(string path)
+    {
+        JSONHandler.SaveData(Instance.loadedGroups, Instance.loadedHistory, path);
     }
 
     public static void SaveToFile()
     {
-        JSONHandler.SaveData(Instance.loadedGroups, Instance.loadedHistory);
+        string path = JSONHandler.GetLastAccessedPath();
+        if (path == string.Empty)
+        {
+            path = FileBrowserHandler.SaveFileDialog();
+            //throw new System.IO.FileNotFoundException("last accessed path was not found!");
+        }
+        SaveToFile(path);
     }
 
     public static int LoadedGroupCount => Instance.loadedGroups.Count;
@@ -79,7 +132,7 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
             Instance.loadedGroups.Remove(group);
 
         //makes sure that at least one group exists.
-        if (Instance.loadedGroups.Count == 0) Instance.loadedGroups.Add(new RollGroup());
+        //if (Instance.loadedGroups.Count == 0) Instance.loadedGroups.Add(new RollGroup());
 
         Instance.loadedDataDirty = true;
     }
@@ -110,6 +163,23 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
         HistoryEntry entry = new HistoryEntry(group);
         Instance.loadedHistory.Insert(positionFromLast, entry);
         Instance.loadedDataDirty = true;
+    }
+
+    public static void RemoveHistory(HistoryEntry entry)
+    {
+        if (Instance.loadedHistory.Contains(entry))
+            Instance.loadedHistory.Remove(entry);
+
+        Instance.loadedDataDirty = true;
+    }
+
+    public static void RemoveHistory(int index)
+    {
+        if(index >= 0 && index < Instance.loadedHistory.Count)
+        {
+            HistoryEntry entry = Instance.loadedHistory[index];
+            RemoveHistory(entry);
+        }
     }
 
     public static void SetNotes(string notes, int index)

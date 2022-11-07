@@ -87,6 +87,13 @@ public class SelectionManager : Singleton<SelectionManager>
         }
     }
 
+    public static void ClearAllDisplays()
+    {
+        ActiveGroupDisplay.SetRollGroup(null);
+        LastRolledDisplay.SetRollOutcomeGroup(null);
+        SelectedHistoryDisplay.SetRollOutcomeGroup(null);
+    }
+
     private void Awake()
     {
         rollSets.onSelect += UpdateActiveSelectedDisplay;
@@ -112,10 +119,12 @@ public class SelectionManager : Singleton<SelectionManager>
     private void UpdateRollSetsUISelection()
     {
         if (rollSets.Selectables.Count > 0) rollSets.Select(SelectedRollGroupIndex);
+        else ActiveGroupDisplay.SetRollGroup(null);
     }
 
     private void UpdateHistoryUISelection()
     {
         if(historyScroller.Selectables.Count > 0) historyScroller.Select(SelectedHistoryGroupIndex);
+        else SelectedHistoryDisplay.SetRollOutcomeGroup(null);
     }
 }

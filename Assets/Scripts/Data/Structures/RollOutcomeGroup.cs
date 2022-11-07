@@ -91,7 +91,7 @@ public class RollOutcomeGroup
     {
         RollOutcome[] copyOfRollOutcomes = new RollOutcome[rollOutcomes.Length];
         
-            RollDiceSelection[] copyOfRerollSelections;
+        RollDiceSelection[] copyOfRerollSelections;
         if (rerollSelections != null) copyOfRerollSelections = new RollDiceSelection[rerollSelections.Length];
         else copyOfRerollSelections = new RollDiceSelection[0];
 
@@ -100,9 +100,12 @@ public class RollOutcomeGroup
             copyOfRollOutcomes[i] = rollOutcomes[i].Clone();
         }
 
-        for (int i = 0; i < rerollSelections.Length; i++)
+        if (rerollSelections != null)
         {
-            copyOfRerollSelections[i] = rerollSelections[i].Clone();
+            for (int i = 0; i < rerollSelections.Length; i++)
+            {
+                copyOfRerollSelections[i] = rerollSelections[i].Clone();
+            }
         }
 
         return new RollOutcomeGroup(rollGroup.Clone(), copyOfRollOutcomes, copyOfRerollSelections);

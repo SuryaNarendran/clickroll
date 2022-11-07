@@ -33,8 +33,10 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
 
     private void InitializeDisplayFields()
     {
-        rollOutcomeDisplayFields = new List<IRollOutcomeDisplay>();
-        modifierDisplayFields = new List<IModifierDisplay>();
+        if(rollOutcomeDisplayFields == null)
+            rollOutcomeDisplayFields = new List<IRollOutcomeDisplay>();
+        if (modifierDisplayFields == null)
+            modifierDisplayFields = new List<IModifierDisplay>();
     }
 
     public void SetRollOutcomeGroup(RollOutcomeGroup newData)
