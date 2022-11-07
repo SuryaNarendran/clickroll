@@ -86,7 +86,11 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
 
     public static RollOutcomeGroup GetHistoryOutcomeAtIndex(int index)
     {
-        return Instance.loadedHistory.ElementAtOrDefault(index).rollOutcomeGroup;
+        if (Instance.loadedHistory.Count > index)
+        {
+            return Instance.loadedHistory.ElementAtOrDefault(index).rollOutcomeGroup;
+        }
+        else return null;
     }
 
     public static string GetHistoryNotesAtIndex(int index)

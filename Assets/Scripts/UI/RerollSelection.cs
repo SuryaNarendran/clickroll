@@ -50,6 +50,8 @@ public class RerollSelection : MonoBehaviour
 
     public void SetupDiceSelections(RollOutcomeGroup outcomeGroup)
     {
+        if (outcomeGroup == null) return;
+
         allSelections = new RollDiceSelection[outcomeGroup.rollOutcomes.Length];
         for(int i=0; i<outcomeGroup.rollOutcomes.Length; i++)
         {

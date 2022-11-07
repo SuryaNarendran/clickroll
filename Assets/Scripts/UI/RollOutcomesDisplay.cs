@@ -25,12 +25,16 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
 
     private void Awake()
     {
-        rollOutcomeDisplayFields = new List<IRollOutcomeDisplay>();
-        modifierDisplayFields = new List<IModifierDisplay>();
-
+        InitializeDisplayFields();
         RefreshMembers();
         DisplayName();
         DisplayTotal();
+    }
+
+    private void InitializeDisplayFields()
+    {
+        rollOutcomeDisplayFields = new List<IRollOutcomeDisplay>();
+        modifierDisplayFields = new List<IModifierDisplay>();
     }
 
     public void SetRollOutcomeGroup(RollOutcomeGroup newData)
@@ -83,6 +87,8 @@ public class RollOutcomesDisplay : MonoBehaviour, IRollGroupDisplay
 
     public void RefreshMembers()
     {
+        if (rollOutcomeDisplayFields == null) InitializeDisplayFields();
+
         foreach (IRollOutcomeDisplay rollDisplay in rollOutcomeDisplayFields)
         {
             rollDisplay.transform.SetParent(UIPooler.releasedObjectParent);
