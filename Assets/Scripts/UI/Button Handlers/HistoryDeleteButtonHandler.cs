@@ -8,4 +8,9 @@ public class HistoryDeleteButtonHandler : MonoBehaviour
     {
         RollGroupStorage.RemoveHistory(SelectionManager.SelectedHistoryGroupIndex);
     }
+
+    public void OnClick()
+    {
+        ConfirmationPopup.Raise("Delete this History Entry?", DeleteHistory);
+    }
 }

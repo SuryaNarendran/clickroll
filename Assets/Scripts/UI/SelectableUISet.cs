@@ -158,8 +158,14 @@ public class SelectableUISet : MonoBehaviour
         {
             Select(selectables[index]);
         }
-            
-        else Debug.LogError("index out of range!");
+
+        else
+        {
+            if(selectables.Count > 0)
+            {
+                Select(selectables[selectables.Count - 1]); //select the last element
+            }
+        }
     }
 
     public void SelectDefault()

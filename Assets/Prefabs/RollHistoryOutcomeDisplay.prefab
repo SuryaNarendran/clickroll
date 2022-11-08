@@ -259,8 +259,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 590, y: 0}
-  m_SizeDelta: {x: 130, y: 0}
+  m_AnchoredPosition: {x: 575, y: 0}
+  m_SizeDelta: {x: 100, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &370192574095160074
 CanvasRenderer:
@@ -673,6 +673,9 @@ MonoBehaviour:
   summationLabel: {fileID: 6674399941124322858}
   selectableUISet: {fileID: 0}
   abbreviatedDisplay: 1
+  highlightRerolls: 0
+  delayResult: 0
+  countsPerSecond: 0
 --- !u!114 &1983089193760660670
 MonoBehaviour:
   m_ObjectHideFlags: 0

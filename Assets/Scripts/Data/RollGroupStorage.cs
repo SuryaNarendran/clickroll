@@ -72,6 +72,7 @@ public class RollGroupStorage : Singleton<RollGroupStorage>
     public static void SaveToFile(string path)
     {
         JSONHandler.SaveData(Instance.loadedGroups, Instance.loadedHistory, path);
+        CurrentlyLoadedLabel.UpdateText(Path.GetFileName(path));
     }
 
     public static void SaveToFile()

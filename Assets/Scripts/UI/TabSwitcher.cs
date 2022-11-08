@@ -11,7 +11,7 @@ public class TabSwitcher : MonoBehaviour
 
     public Tab activeTab { get; private set; }
 
-    private void Awake()
+    private void Start()
     {
         SelectTab(0);
     }

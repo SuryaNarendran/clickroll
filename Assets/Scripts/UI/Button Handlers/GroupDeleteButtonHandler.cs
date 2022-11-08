@@ -9,4 +9,9 @@ public class GroupDeleteButtonHandler : MonoBehaviour
         SelectionManager.ActiveGroupDisplay.DeleteReferencedGroup();
         RollGroupStorage.SaveToFile();
     }
+
+    public void OnClick()
+    {
+        ConfirmationPopup.Raise("Delete this Roll Group Preset?", Delete);
+    }
 }

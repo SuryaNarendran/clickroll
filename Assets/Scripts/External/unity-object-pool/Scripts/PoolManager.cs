@@ -34,7 +34,9 @@ public class PoolManager : Singleton<PoolManager>
 		{
 			throw new Exception("Pool for prefab " + prefab.name + " has already been created");
 		}
-		var pool = new ObjectPool<GameObject>(() => { return InstantiatePrefab(prefab); }, size);
+		//MODIFIED - by Surya to allow instantiation of GameObjects in world space
+		//var pool = new ObjectPool<GameObject>(() => { return InstantiatePrefab(prefab); }, size);
+		var pool = new ObjectPool<GameObject>(() => {return Instantiate(prefab, root, false); }, size);
 		prefabLookup[prefab] = pool;
 
 		dirty = true;
